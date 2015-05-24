@@ -1,0 +1,18 @@
+name: HetimaPatrinia
+version: 0.0.1
+author: kyorohiro
+description: A sample Chrome packaged application
+dependencies:
+  ace: any
+  chrome: any
+  hetimacore:
+    git: https://github.com/kyorohiro/dart_hetimacore.git
+  hetimagit:
+    git: https://github.com/kyorohiro/dart_hetimagit.git
+dev_dependencies:
+  ace_js:
+    path: js
+transformers:
+- chrome
+- $dart2js:
+    csp: true

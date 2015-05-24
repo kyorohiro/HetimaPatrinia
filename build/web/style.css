@@ -1,0 +1,91 @@
+html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif, Tahoma, Verdana, sans-serif;
+    font-size: 12px;
+    background: rgb(14, 98, 165);
+    color: white;
+}
+
+#container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+#controls {
+  height: 100%;
+  width: 240px;  
+  padding: 4px;
+}
+
+#editor-container { 
+  height: 100%;
+  width: calc(100% - 240px);        
+}
+
+#editor {
+  height: 100%;
+  width: 100%;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;  
+}
+
+.info-custom-css{
+  background-color: #fcf8e3;
+  color: #3a87ad;
+}
+
+.warning-custom-css{
+  color: #c09853;
+  background-color: yellow;
+}
+
+.error-custom-css{
+  color: #D8000C;
+  background-color: red;
+}
+
+
+nav > ul {
+    /* タブの下の線はulタグ全体に対する線と考えられる */
+    border-bottom: 1px solid #8c7e7e;
+    font-size: 0; /* 親要素のフォントサイズの影響により子要素をinline-blockにした際、隙間が開いてしまうので親要素でfont-sizeを0にする */
+}
+
+nav > ul > li {
+    margin-bottom: -1px; /* ulの線と同じピクセルをマイナス指定する */
+    padding: 10px 15px;
+    display: inline-block; /* タブを横並びにする */
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    border: 1px solid #8c7e7e;
+    color: #8C7E7E;
+    background: #F2F0F0;
+    font-size: 12px;
+    cursor: pointer; /* マウスオーバーした際にカーソルを指にする */
+}
+
+/* 最後の要素以外にマージンを適用 */
+nav > ul > li:not(:last-child) {
+    margin-right: 10px;
+}
+
+/* 選択中のタブを表現する際のクラス */
+nav > ul > li.selected {
+    background: #fff;
+    border-bottom: 1px solid #fff;
+}
