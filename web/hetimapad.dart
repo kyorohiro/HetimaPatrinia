@@ -21,7 +21,7 @@ part 'src/editor_info.dart';
 
 ace.Editor editorFile = ace.edit(html.querySelector('#editor-file'));
 ace.Editor editorNow = ace.edit(html.querySelector('#editor-now'));
-Tab table = new Tab();
+Tab tab = new Tab();
 
 void main() {
   ace.implementation = ACE_PROXY_IMPLEMENTATION;
@@ -36,7 +36,7 @@ void main() {
 
   enableAutocomplete(editorNow);
 
-  table.init();
+  tab.init();
 
   //
   // <textarea id="com-clone-address" ></textarea>
@@ -108,7 +108,9 @@ void main() {
               return b.getByteFuture(0, length);
             }).then((List<int> l) {
               print("#--f-- 004${conv.UTF8.decode(l)}");
+              tab.selectTab("#m01_now");
               editorNow.setValue(conv.UTF8.decode(l));
+              editorNow.focus();
               print("#--f-- 005");
             }).catchError((e){});
           });
@@ -130,7 +132,7 @@ void main() {
 
   //
   // update file list
-  table.onShow.listen((String s) {
+  tab.onShow.listen((String s) {
     if (s == "#editor-file") {
       if (currentDir == null) {
         getRoot().then((_) {
@@ -169,21 +171,27 @@ class Dialog {
 class Tab {
   Map<String, String> tabs = {"#m00_file": "#editor-file", "#m01_now": "#editor-now", "#m00_clone": "#com-clone"};
 
+  html.Element current = null;
+
+  void selectTab(String id) {
+    html.Element i = html.querySelector(id);
+    print("##click ${i}");
+
+    display([id]);
+    i.classes.add("selected");
+    if (current != null && current != i) {
+      current.classes.remove("selected");
+    }
+    current = i;
+
+    update([id]);
+  }
+
   void init() {
-    html.Element current = null;
     for (String t in tabs.keys) {
       html.Element i = html.querySelector(t);
       i.onClick.listen((html.MouseEvent e) {
-        print("##click ${i}");
-
-        display([t]);
-        i.classes.add("selected");
-        if (current != null && current != i) {
-          current.classes.remove("selected");
-        }
-        current = i;
-
-        update([t]);
+        selectTab(t);
       });
     }
   }
@@ -191,6 +199,7 @@ class Tab {
   void display(List<String> displayList) {
     for (String t in tabs.keys) {
       if (displayList.contains(t)) {
+        
         html.querySelector(tabs[t]).style.display = "block";
       } else {
         html.querySelector(tabs[t]).style.display = "none";
