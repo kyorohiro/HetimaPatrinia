@@ -52,10 +52,9 @@ packages:
     version: "0.0.2"
   hetimagit:
     description:
-      ref: null
-      resolved-ref: "8f5590cd7f02200032888e721f599917cbb66e6b"
-      url: "https://github.com/kyorohiro/dart_hetimagit.git"
-    source: git
+      path: "/Users/kiyohiro/dart/git/dart_hetimagit"
+      relative: false
+    source: path
     version: "0.0.1"
   http_parser:
     description: http_parser

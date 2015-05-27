@@ -61,22 +61,21 @@ body {
 
 
 nav > ul {
-    /* タブの下の線はulタグ全体に対する線と考えられる */
-    border-bottom: 1px solid #8c7e7e;
-    font-size: 0; /* 親要素のフォントサイズの影響により子要素をinline-blockにした際、隙間が開いてしまうので親要素でfont-sizeを0にする */
+  border-bottom: 1px solid #8c7e7e;
+  font-size: 0;
 }
 
 nav > ul > li {
-    margin-bottom: -1px; /* ulの線と同じピクセルをマイナス指定する */
+    margin-bottom: -1px;
     padding: 10px 15px;
-    display: inline-block; /* タブを横並びにする */
+    display: inline-block;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     border: 1px solid #8c7e7e;
     color: #8C7E7E;
     background: #F2F0F0;
     font-size: 12px;
-    cursor: pointer; /* マウスオーバーした際にカーソルを指にする */
+    cursor: pointer;
 }
 
 /* 最後の要素以外にマージンを適用 */

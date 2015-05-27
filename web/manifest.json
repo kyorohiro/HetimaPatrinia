@@ -1,6 +1,6 @@
 {
-  "name": "HetimaPad",
-  "version": "1",
+  "name": "HetimaPatrinia",
+  "version": "0.0.1",
   
   "manifest_version": 2,
   
@@ -28,6 +28,8 @@
     {"socket": [
       "tcp-listen","tcp-connect:*:*"
     ]},
-    "unlimitedStorage"
+    "system.network",
+    "unlimitedStorage",
+    {"fileSystem": ["write", "retainEntries", "directory", "retainEntries"]} 
   ]
 }

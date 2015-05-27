@@ -11,6 +11,7 @@ import 'package:hetimacore/hetimacore.dart' as hetima;
 import 'package:hetimacore/hetimacore_cl.dart' as hetima;
 import 'utils.dart' as git;
 import 'hetimafile.dart';
+import 'dart:js' as js;
 
 part 'src/autocomplete.dart';
 part 'src/documents.dart';
@@ -26,7 +27,6 @@ Tab tab = new Tab();
 
 HetiDirectory currentDir = null;
 
-
 void main() {
   ace.implementation = ACE_PROXY_IMPLEMENTATION;
   editorFile
@@ -41,6 +41,7 @@ void main() {
   enableAutocomplete(editorNow);
 
   tab.init();
+
 
   //
   // clone
@@ -84,6 +85,7 @@ void onClickClone() {
   print("click clone button ${address.value}");
   git.GitLocation location = new git.GitLocation();
   location.init().then((_) {
+    print("### ${location.entry}");
     git.ObjectStore store = new git.ObjectStore(location.entry);
     git.Clone clone = new git.Clone(new git.GitOptions(repoUrl: address.value, root: location.entry, depth: 1, store: store));
     clone.clone().then((_) {});
@@ -92,7 +94,7 @@ void onClickClone() {
 
 
 Future getRoot() {
-  return HetiFileSystem.getFileSystem().then((HetiFileSystem fs) {
+  return DomJSHetiFileSystem.getFileSystem().then((HetiFileSystem fs) {
     currentDir = fs.root;
   });
 }
