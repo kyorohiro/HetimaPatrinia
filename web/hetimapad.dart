@@ -9,8 +9,9 @@ import 'package:hetimagit/src/git/commands/clone.dart' as git;
 import 'package:hetimagit/src/git/objectstore.dart' as git;
 import 'package:hetimacore/hetimacore.dart' as hetima;
 import 'package:hetimacore/hetimacore_cl.dart' as hetima;
+import 'package:hetimafile/hetimafile.dart' as hetifile;
+import 'package:hetimafile/hetimafile_cl.dart' as hetifilecl;
 import 'utils.dart' as git;
-import 'hetimafile.dart';
 import 'dart:js' as js;
 
 part 'src/autocomplete.dart';
@@ -21,11 +22,12 @@ part 'src/options.dart';
 part 'src/themes.dart';
 part 'src/editor_info.dart';
 
+
 ace.Editor editorFile = ace.edit(html.querySelector('#editor-file'));
 ace.Editor editorNow = ace.edit(html.querySelector('#editor-now'));
 Tab tab = new Tab();
 
-HetiDirectory currentDir = null;
+hetifile.HetiDirectory currentDir = null;
 
 void main() {
   ace.implementation = ACE_PROXY_IMPLEMENTATION;
@@ -41,7 +43,6 @@ void main() {
   enableAutocomplete(editorNow);
 
   tab.init();
-
 
   //
   // clone
@@ -94,18 +95,18 @@ void onClickClone() {
 
 
 Future getRoot() {
-  return DomJSHetiFileSystem.getFileSystem().then((HetiFileSystem fs) {
+  return hetifilecl.DomJSHetiFileSystem.getFileSystem().then((hetifile.HetiFileSystem fs) {
     currentDir = fs.root;
   });
 }
 
 updateList() {
-  return currentDir.getList().then((List<HetiEntry> l) {
+  return currentDir.getList().then((List<hetifile.HetiEntry> l) {
     StringBuffer b = new StringBuffer();
     b.write(">>${currentDir.fullPath}\n");
     b.write("..");
     b.write("\n--");
-    for (HetiEntry e in l) {
+    for (hetifile.HetiEntry e in l) {
       b.write("\n---\n");
       b.write(e.name);
       b.write("\n--");
@@ -120,7 +121,7 @@ updateList() {
 select(int row, int col) {
   int index = row ~/ 3;
   if (index == 0 || index - 1 == (currentDir.lastGetList.length)) {
-    currentDir.getParent().then((HetiDirectory d) {
+    currentDir.getParent().then((hetifile.HetiDirectory d) {
       if (d != null) {
         currentDir = d;
         updateList();
@@ -130,13 +131,13 @@ select(int row, int col) {
   } else {
     index = index - 1;
     if (currentDir.lastGetList != null && index < currentDir.lastGetList.length) {
-      HetiEntry entry = currentDir.lastGetList[index];
-      if (entry is HetiDirectory) {
+      hetifile.HetiEntry entry = currentDir.lastGetList[index];
+      if (entry is hetifile.HetiDirectory) {
         currentDir = entry;
         updateList();
-      } else if(entry is HetiFile) {
+      } else if(entry is hetifile.HetiFile) {
         print("#--f-- 001");
-        (entry as HetiFile).getHetimaBuilder().then((hetima.HetimaBuilder b){
+        (entry as hetifile.HetiFile).getHetimaBuilder().then((hetima.HetimaBuilder b){
           print("#--f-- 002");
           return b.getLength().then((int length) {
             print("#--f-- 003");
