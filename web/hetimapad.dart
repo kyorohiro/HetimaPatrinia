@@ -115,6 +115,7 @@ updateList() {
     b.write("..");
     b.write("\n--\n");
     editorFile.setValue(b.toString());
+    editorFile.clearSelection();
   });
 }
 
@@ -136,18 +137,18 @@ select(int row, int col) {
         currentDir = entry;
         updateList();
       } else if(entry is hetifile.HetiFile) {
-        print("#--f-- 001");
         (entry as hetifile.HetiFile).getHetimaBuilder().then((hetima.HetimaBuilder b){
-          print("#--f-- 002");
           return b.getLength().then((int length) {
-            print("#--f-- 003");
             return b.getByteFuture(0, length);
           }).then((List<int> l) {
-            print("#--f-- 004${conv.UTF8.decode(l)}");
             tab.selectTab("#m01_now");
-            editorNow.setValue(conv.UTF8.decode(l));
-            editorNow.focus();
-            print("#--f-- 005");
+            try {
+              editorNow.setValue(conv.UTF8.decode(l,allowMalformed:true));
+              editorNow.focus();
+              editorNow.clearSelection();
+            } catch(e) {
+              print("### ERROR 001 ${e}");
+            }
           }).catchError((e){});
         });
       }
