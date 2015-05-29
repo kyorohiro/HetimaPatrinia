@@ -83,7 +83,7 @@ void main() {
     }
   });
   
-  html.queryAll('[name="coding"]').forEach((html.InputElement radioButton) {
+  html.querySelectorAll('[name="coding"]').forEach((html.InputElement radioButton) {
       radioButton.onClick.listen((html.MouseEvent e) {
         html.InputElement clicked = e.target;
         print("The user is ${clicked.value} ${clicked.checked}");

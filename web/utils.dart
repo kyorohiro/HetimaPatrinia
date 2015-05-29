@@ -60,7 +60,7 @@ class GitLocation {
   Future init() {
     print("#### GitLocation#init");
     // Create `git/git_xxx`. Delete the directory if it already exists.
-    return getLocalDataDir('git').then((hetifile.HetiDirectory gitDir) {
+    return getLocalDataDir('HetimaPatrinia').then((hetifile.HetiDirectory gitDir) {
       print("#### GitLocation 001 ${name} ${gitDir.fullPath}");
       return gitDir.getDirectory(name).then((dir) {
         print("#### GitLocation 002 ${dir.fullPath}");

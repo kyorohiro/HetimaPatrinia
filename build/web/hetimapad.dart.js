@@ -7457,7 +7457,7 @@ goc:function(a){return this.Q},
 GR:function(){return D.J7().ml(new G.YW())},
 xn:function(a){return this.GR().ml(new G.PW(a))},
 kI:function(){P.JS("#### GitLocation#init")
-return this.xn("git").ml(new G.K0(this)).OA(new G.QZ())},
+return this.xn("HetimaPatrinia").ml(new G.K0(this)).OA(new G.QZ())},
 i6:function(a){return J.ye(a).OA(new G.bp())}},
 YW:{
 "^":"r:38;",
@@ -8898,7 +8898,7 @@ gYK:function(){var z=new D.Pj(null,[],[])
 z.a=J.Q(this.Q,"root")
 return z},
 static:{J7:function(){var z=H.J(new P.Zf(H.J(new P.vs(0,$.X3,null),[null])),[null])
-$.rj().V7("webkitRequestFileSystem",[1,5242880,new D.yq(z),new D.HU(z)])
+$.rj().V7("requestFileSystem",[1,5242880,new D.yq(z),new D.HU(z)])
 return z.Q}}},
 yq:{
 "^":"r:2;Q",
