@@ -13,7 +13,7 @@ import 'package:hetimafile/hetimafile.dart' as hetifile;
 import 'package:hetimafile/hetimafile_cl.dart' as hetifilecl;
 import 'utils.dart' as git;
 import 'dart:js' as js;
-
+import 'hetitextencoding.dart' as te;
 part 'src/autocomplete.dart';
 part 'src/documents.dart';
 part 'src/key_bindings.dart';
@@ -30,6 +30,10 @@ Tab tab = new Tab();
 hetifile.HetiDirectory currentDir = null;
 
 void main() {
+  new Future.delayed(new Duration(seconds:5),(){
+  te.HetiTextDecoder sjisEnc = new te.HetiTextDecoder("shift_jis");
+  print("### => ${sjisEnc.decode([65, 66, 67, 68])} ${sjisEnc.decode([0x41, 0x42, 0x43, 0x84, 0x44]).length}");
+  });
   ace.implementation = ACE_PROXY_IMPLEMENTATION;
   editorFile
     ..theme = new ace.Theme.named(ace.Theme.CHROME)
@@ -137,7 +141,8 @@ select(int row, int col) {
         currentDir = entry;
         updateList();
       } else if(entry is hetifile.HetiFile) {
-        (entry as hetifile.HetiFile).getHetimaBuilder().then((hetima.HetimaBuilder b){
+        //(entry as hetifile.HetiFile)
+        entry.getHetimaBuilder().then((hetima.HetimaBuilder b){
           return b.getLength().then((int length) {
             return b.getByteFuture(0, length);
           }).then((List<int> l) {

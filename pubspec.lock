@@ -127,6 +127,12 @@ packages:
     description: test
     source: hosted
     version: "0.12.0"
+  textencoding_js:
+    description:
+      path: textencoding
+      relative: true
+    source: path
+    version: "0.0.0"
   unittest:
     description: unittest
     source: hosted
