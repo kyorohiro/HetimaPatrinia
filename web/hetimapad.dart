@@ -28,6 +28,7 @@ ace.Editor editorNow = ace.edit(html.querySelector('#editor-now'));
 Tab tab = new Tab();
 
 hetifile.HetiDirectory currentDir = null;
+String coding = "UTF-8";
 
 void main() {
 //  new Future.delayed(new Duration(seconds:5),(){
@@ -81,6 +82,14 @@ void main() {
       }
     }
   });
+  
+  html.queryAll('[name="coding"]').forEach((html.InputElement radioButton) {
+      radioButton.onClick.listen((html.MouseEvent e) {
+        html.InputElement clicked = e.target;
+        print("The user is ${clicked.value} ${clicked.checked}");
+        coding = clicked.value;
+      });
+    });
 }
 
 
@@ -152,8 +161,14 @@ select(int row, int col) {
             tab.selectTab("#m01_now");
             try {
               print("### ${entry.name}");
+              te.HetiTextDecoder enc = new te.HetiTextDecoder(coding);
+              ;
               editorNow.session.mode = new ace.Mode.forFile(entry.name);
-              editorNow.setValue(conv.UTF8.decode(l,allowMalformed:true));
+              if(coding == "UTF-8") {
+                editorNow.setValue(conv.UTF8.decode(l,allowMalformed:true));
+              } else {
+                editorNow.setValue(enc.decode(l));
+              }
               editorNow.focus();
               editorNow.clearSelection();
             } catch(e) {
