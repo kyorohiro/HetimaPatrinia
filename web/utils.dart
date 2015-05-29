@@ -26,9 +26,13 @@ class GitLocation {
   String _name;
   html.DirectoryEntry entry;
 
-  GitLocation() {
-    Random r = new Random();
-    _name = 'git_${r.nextInt(100)}';
+  GitLocation(String name) {
+    if (name == null || name.length == 0) {
+      Random r = new Random();
+      _name = 'git_${r.nextInt(100)}';
+    } else {
+      _name = name;
+    }
   }
 
   String get name => _name;
@@ -53,7 +57,6 @@ class GitLocation {
     });
   }
 
-  
   Future init() {
     print("#### GitLocation#init");
     // Create `git/git_xxx`. Delete the directory if it already exists.
@@ -75,7 +78,7 @@ class GitLocation {
           entry = new chrome.CrDirectoryEntry.fromProxy(d.toBinary());
         });
       });
-    }).catchError((html.FileError e){
+    }).catchError((html.FileError e) {
       print("###${e} ${e.message}");
     });
   }

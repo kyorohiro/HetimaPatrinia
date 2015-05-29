@@ -30,10 +30,10 @@ Tab tab = new Tab();
 hetifile.HetiDirectory currentDir = null;
 
 void main() {
-  new Future.delayed(new Duration(seconds:5),(){
-  te.HetiTextDecoder sjisEnc = new te.HetiTextDecoder("shift_jis");
-  print("### => ${sjisEnc.decode([65, 66, 67, 68])} ${sjisEnc.decode([0x41, 0x42, 0x43, 0x84, 0x44]).length}");
-  });
+//  new Future.delayed(new Duration(seconds:5),(){
+//  te.HetiTextDecoder sjisEnc = new te.HetiTextDecoder("shift_jis");
+//  print("### => ${sjisEnc.decode([65, 66, 67, 68])} ${sjisEnc.decode([0x41, 0x42, 0x43, 0x84, 0x44]).length}");
+//  });
   ace.implementation = ACE_PROXY_IMPLEMENTATION;
   editorFile
     ..theme = new ace.Theme.named(ace.Theme.CHROME)
@@ -42,7 +42,8 @@ void main() {
 
   editorNow
     ..theme = new ace.Theme.named(ace.Theme.CHROME)
-    ..session.mode = new ace.Mode.named(ace.Mode.DART);
+    ..session.mode = new ace.Mode.named(ace.Mode.DART)
+    ..readOnly = true;
 
   enableAutocomplete(editorNow);
 
@@ -87,8 +88,10 @@ void main() {
 void onClickClone() {
   print("click clone button");
   html.TextAreaElement address = html.querySelector('#com-clone-address');
+  html.TextAreaElement outputdir = html.querySelector('#com-clone-outputdir');
+  
   print("click clone button ${address.value}");
-  git.GitLocation location = new git.GitLocation();
+  git.GitLocation location = new git.GitLocation(outputdir.value);
   location.init().then((_) {
     print("### ${location.entry}");
     git.ObjectStore store = new git.ObjectStore(location.entry);
@@ -148,6 +151,8 @@ select(int row, int col) {
           }).then((List<int> l) {
             tab.selectTab("#m01_now");
             try {
+              print("### ${entry.name}");
+              editorNow.session.mode = new ace.Mode.forFile(entry.name);
               editorNow.setValue(conv.UTF8.decode(l,allowMalformed:true));
               editorNow.focus();
               editorNow.clearSelection();
