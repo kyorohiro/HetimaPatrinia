@@ -26,7 +26,7 @@ part 'src/editor_info.dart';
 ace.Editor editorFile = ace.edit(html.querySelector('#editor-file'));
 ace.Editor editorNow = ace.edit(html.querySelector('#editor-now'));
 Tab tab = new Tab();
-
+Dialog dialog = new Dialog();
 hetifile.HetiDirectory currentDir = null;
 String coding = "UTF-8";
 
@@ -49,7 +49,7 @@ void main() {
   enableAutocomplete(editorNow);
 
   tab.init();
-
+  dialog.init();
   //
   // clone
   html.querySelector('#com-clone-btn').onClick.listen((html.MouseEvent e) {
@@ -105,7 +105,13 @@ void onClickClone() {
     print("### ${location.entry}");
     git.ObjectStore store = new git.ObjectStore(location.entry);
     git.Clone clone = new git.Clone(new git.GitOptions(repoUrl: address.value, root: location.entry, depth: 1, store: store));
-    clone.clone().then((_) {});
+    clone.clone().then((_) {
+      print("end clone");
+      dialog.show("clone end");
+    }).catchError((e){
+      print("end clone error : ${e} ${e.toString()}");
+      dialog.show("end clone error : ${e} ${e.toString()}");
+    });
   });
 }
 
@@ -185,7 +191,8 @@ select(int row, int col) {
 class Dialog {
   html.Element dialog = html.querySelector('#dialog');
   html.ButtonElement dialogBtn = html.querySelector('#dialog-btn');
-
+  html.ButtonElement dialogMessage = html.querySelector('#dialog-message');
+ 
   Dialog() {
     init();
   }
@@ -196,13 +203,14 @@ class Dialog {
     });
   }
 
-  void show() {
+  void show(String message) {
     dialog.style.left = "${html.window.innerWidth/2-100}px";
     dialog.style.top = "${html.window.innerHeight/2-100}px";
     dialog.style.position = "absolute";
     dialog.style.display = "block";
     dialog.style.width = "200px";
     dialog.style.zIndex = "50";
+    dialogMessage.value = message;
   }
 }
 

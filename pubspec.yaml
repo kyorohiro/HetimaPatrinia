@@ -10,7 +10,7 @@ dependencies:
   hetimafile:
     path: /Users/kiyohiro/dart/git/dart_hetimafile
   hetimagit:
-    git: https://github.com/kyorohiro/dart_hetimagit
+    path: /Users/kiyohiro/dart/git/dart_hetimagit
   textencoding_js:
     path: textencoding
 dev_dependencies:
