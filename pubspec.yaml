@@ -12,10 +12,10 @@ dependencies:
   hetimagit:
     path: /Users/kiyohiro/dart/git/dart_hetimagit
   textencoding_js:
-    path: textencoding
+    path: jstextencoding
 dev_dependencies:
   ace_js:
-    path: js
+    path: jsace
 transformers:
 - chrome
 - $dart2js:
