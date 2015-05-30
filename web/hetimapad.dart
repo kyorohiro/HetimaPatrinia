@@ -22,11 +22,11 @@ part 'src/options.dart';
 part 'src/themes.dart';
 part 'src/editor_info.dart';
 
-
 ace.Editor editorFile = ace.edit(html.querySelector('#editor-file'));
 ace.Editor editorNow = ace.edit(html.querySelector('#editor-now'));
 Tab tab = new Tab();
 Dialog dialog = new Dialog();
+RemoveDialog rmdialog = new RemoveDialog();
 hetifile.HetiDirectory currentDir = null;
 String coding = "UTF-8";
 
@@ -50,6 +50,7 @@ void main() {
 
   tab.init();
   dialog.init();
+  rmdialog.init();
   //
   // clone
   html.querySelector('#com-clone-btn').onClick.listen((html.MouseEvent e) {
@@ -61,7 +62,23 @@ void main() {
   // support click and ender key
   html.querySelector('#editor-file').onClick.listen((html.MouseEvent e) {
     print("#click file ${editorFile.cursorPosition.row} ${editorFile.cursorPosition.column}");
-    select(editorFile.cursorPosition.row, editorFile.cursorPosition.column);
+    if (editorFile.cursorPosition.column == 0) {
+      bool include = false;
+      List<ace.Annotation> l = [];
+      for (ace.Annotation a in editorFile.session.getAnnotations()) {
+        if (a.row == editorFile.cursorPosition.row) {
+          include = true;
+        } else {
+          l.add(a);
+        }
+      }
+      if (include == false) {
+        l.add(new ace.Annotation(row: editorFile.cursorPosition.row));
+      }
+      editorFile.session.setAnnotations(l);
+    } else {
+      select(editorFile.cursorPosition.row, editorFile.cursorPosition.column);
+    }
   });
 
   html.querySelector('#editor-file').onKeyDown.listen((html.KeyboardEvent e) {
@@ -72,7 +89,8 @@ void main() {
   //
   // update file list
   tab.onShow.listen((String s) {
-    if (s == "#editor-file") {
+    if (s == "#con-file") {
+      //"#editor-file") {
       if (currentDir == null) {
         getRoot().then((_) {
           updateList();
@@ -82,23 +100,26 @@ void main() {
       }
     }
   });
-  
+
   html.querySelectorAll('[name="coding"]').forEach((html.InputElement radioButton) {
-      radioButton.onClick.listen((html.MouseEvent e) {
-        html.InputElement clicked = e.target;
-        print("The user is ${clicked.value} ${clicked.checked}");
-        coding = clicked.value;
-      });
+    radioButton.onClick.listen((html.MouseEvent e) {
+      html.InputElement clicked = e.target;
+      print("The user is ${clicked.value} ${clicked.checked}");
+      coding = clicked.value;
     });
+  });
+
+  html.querySelector("#con-file-remove-button").onClick.listen((html.MouseEvent e) {
+    print("#psuh key ${editorFile.cursorPosition.row} ${editorFile.cursorPosition.column}");
+    rmdialog.show();
+  });
 }
-
-
 
 void onClickClone() {
   print("click clone button");
   html.TextAreaElement address = html.querySelector('#com-clone-address');
   html.TextAreaElement outputdir = html.querySelector('#com-clone-outputdir');
-  
+
   print("click clone button ${address.value}");
   git.GitLocation location = new git.GitLocation(outputdir.value);
   location.init().then((_) {
@@ -108,13 +129,12 @@ void onClickClone() {
     clone.clone().then((_) {
       print("end clone");
       dialog.show("clone end");
-    }).catchError((e){
+    }).catchError((e) {
       print("end clone error : ${e} ${e.toString()}");
       dialog.show("end clone error : ${e} ${e.toString()}");
     });
   });
 }
-
 
 Future getRoot() {
   return hetifilecl.DomJSHetiFileSystem.getFileSystem().then((hetifile.HetiFileSystem fs) {
@@ -123,6 +143,7 @@ Future getRoot() {
 }
 
 updateList() {
+  editorFile.session.setAnnotations([]);
   return currentDir.getList().then((List<hetifile.HetiEntry> l) {
     StringBuffer b = new StringBuffer();
     b.write(">>${currentDir.fullPath}\n");
@@ -141,9 +162,24 @@ updateList() {
   });
 }
 
+List<hetifile.HetiEntry> selectFile(List<int> rowList) {
+  List<hetifile.HetiEntry> ret = [];
+
+  for (int row in rowList) {
+    int index = (row ~/ 3) -1;
+    if (index <= -1 || index >= (currentDir.lastGetList.length)) {
+      
+    } else if(index< currentDir.lastGetList.length) {
+      hetifile.HetiEntry entry = currentDir.lastGetList[index];
+      ret.add(entry);
+    }
+  }
+  return ret;
+}
+
 select(int row, int col) {
-  int index = row ~/ 3;
-  if (index == 0 || index - 1 == (currentDir.lastGetList.length)) {
+  List<hetifile.HetiEntry> entryList = selectFile([row]);
+  if (entryList.length == 0) {
     currentDir.getParent().then((hetifile.HetiDirectory d) {
       if (d != null) {
         currentDir = d;
@@ -152,15 +188,13 @@ select(int row, int col) {
     });
     return;
   } else {
-    index = index - 1;
-    if (currentDir.lastGetList != null && index < currentDir.lastGetList.length) {
-      hetifile.HetiEntry entry = currentDir.lastGetList[index];
+      hetifile.HetiEntry entry = entryList[0];
       if (entry is hetifile.HetiDirectory) {
         currentDir = entry;
         updateList();
-      } else if(entry is hetifile.HetiFile) {
+      } else if (entry is hetifile.HetiFile) {
         //(entry as hetifile.HetiFile)
-        entry.getHetimaBuilder().then((hetima.HetimaBuilder b){
+        entry.getHetimaBuilder().then((hetima.HetimaBuilder b) {
           return b.getLength().then((int length) {
             return b.getByteFuture(0, length);
           }).then((List<int> l) {
@@ -170,29 +204,27 @@ select(int row, int col) {
               te.HetiTextDecoder enc = new te.HetiTextDecoder(coding);
               ;
               editorNow.session.mode = new ace.Mode.forFile(entry.name);
-              if(coding == "UTF-8") {
-                editorNow.setValue(conv.UTF8.decode(l,allowMalformed:true));
+              if (coding == "UTF-8") {
+                editorNow.setValue(conv.UTF8.decode(l, allowMalformed: true));
               } else {
                 editorNow.setValue(enc.decode(l));
               }
               editorNow.focus();
               editorNow.clearSelection();
-            } catch(e) {
+            } catch (e) {
               print("### ERROR 001 ${e}");
             }
-          }).catchError((e){});
+          }).catchError((e) {});
         });
       }
-    }
   }
 }
-
 
 class Dialog {
   html.Element dialog = html.querySelector('#dialog');
   html.ButtonElement dialogBtn = html.querySelector('#dialog-btn');
   html.ButtonElement dialogMessage = html.querySelector('#dialog-message');
- 
+
   Dialog() {
     init();
   }
@@ -214,8 +246,53 @@ class Dialog {
   }
 }
 
+class RemoveDialog {
+  html.Element dialog = html.querySelector('#dialog-remove-file');
+  html.ButtonElement dialogOk = html.querySelector('#dialog-remove-file-ok');
+  html.ButtonElement dialogBack = html.querySelector('#dialog-remove-file-back');
+  html.TextAreaElement dialogMessage = html.querySelector('#dialog-remove-file-message');
+
+  RemoveDialog() {
+    init();
+  }
+
+  void init() {
+    dialogOk.onClick.listen((html.MouseEvent e) {
+      dialog.style.display = "none";
+    });
+    dialogBack.onClick.listen((html.MouseEvent e) {
+      dialog.style.display = "none";
+    });
+  }
+
+  void show() {
+    List<int> rowList = [];
+    List<ace.Annotation> a =  editorFile.session.getAnnotations();
+    for(ace.Annotation b in a) {
+      rowList.add(b.row);
+    }
+    List<hetifile.HetiEntry> fList = selectFile(rowList);
+    StringBuffer buffer = new StringBuffer();
+    for(hetifile.HetiEntry f in fList) {
+      buffer.write(f.name);
+      buffer.write("\n");
+    }
+    dialog.style.left = "${html.window.innerWidth/2-100}px";
+    dialog.style.top = "${html.window.innerHeight/2-100}px";
+    dialog.style.position = "absolute";
+    dialog.style.display = "block";
+    dialog.style.width = "200px";
+    dialog.style.zIndex = "50";
+    dialogMessage.value = buffer.toString();
+  }
+}
+
 class Tab {
-  Map<String, String> tabs = {"#m00_file": "#editor-file", "#m01_now": "#editor-now", "#m00_clone": "#com-clone"};
+  Map<String, String> tabs = {
+    "#m00_file": "#con-file", //"#editor-file",
+    "#m01_now": "#editor-now",
+    "#m00_clone": "#com-clone"
+  };
 
   html.Element current = null;
 
@@ -245,7 +322,6 @@ class Tab {
   void display(List<String> displayList) {
     for (String t in tabs.keys) {
       if (displayList.contains(t)) {
-        
         html.querySelector(tabs[t]).style.display = "block";
       } else {
         html.querySelector(tabs[t]).style.display = "none";
@@ -263,4 +339,3 @@ class Tab {
     }
   }
 }
-
