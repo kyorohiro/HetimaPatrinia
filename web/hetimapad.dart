@@ -271,6 +271,9 @@ class RemoveDialog {
     for(ace.Annotation b in a) {
       rowList.add(b.row);
     }
+    dialogOk.onClick.listen((html.MouseEvent e) {
+      dialog.style.display = "none";
+    });
     List<hetifile.HetiEntry> fList = selectFile(rowList);
     StringBuffer buffer = new StringBuffer();
     for(hetifile.HetiEntry f in fList) {
@@ -284,6 +287,16 @@ class RemoveDialog {
     dialog.style.width = "200px";
     dialog.style.zIndex = "50";
     dialogMessage.value = buffer.toString();
+    dialogOk.onClick.listen((html.MouseEvent e) {
+      for(hetifile.HetiEntry f in fList) {
+        if(f is hetifile.HetiFile) {
+          f.remove();
+        } else if(f is hetifile.HetiDirectory) {
+          f.removeRecursively();          
+        }
+      }
+      dialog.style.display = "none";
+    });
   }
 }
 
