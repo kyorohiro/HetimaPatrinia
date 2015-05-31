@@ -31,9 +31,7 @@ SaveDialog savedialog = new SaveDialog();
 hetifile.HetiDirectory currentDir = null;
 String coding = "UTF-8";
 
-
-
-Map<String,Buffer> bufferDic = {};
+Map<String, Buffer> bufferDic = {};
 class Buffer {
   hetifile.HetiFile file;
   String value = "";
@@ -45,24 +43,24 @@ void bufferSave(String key, Buffer value) {
 }
 
 void bufferClear() {
-  if(currentBuffer != null) {
+  if (currentBuffer != null) {
     bufferDic.remove(currentBuffer.file.fullPath);
     currentBuffer.isChange = false;
     bufferSetValueFromEntry(currentBuffer.file);
   }
 }
 
-bufferSetValueFromString(hetifile.HetiFile entry, String value,[isChange=false]) {
-  if(currentBuffer != null && currentBuffer.isChange == true) {
+bufferSetValueFromString(hetifile.HetiFile entry, String value, [isChange = false]) {
+  if (currentBuffer != null && currentBuffer.isChange == true) {
     print("####==> AAA 02");
     bufferDic[currentBuffer.file.fullPath] = currentBuffer;
     currentBuffer.value = editorNow.value;
   }
   print("####==> AAA 03");
   currentBuffer = new Buffer()
-  ..file=entry
-  ..value=value
-  ..isChange=isChange;
+    ..file = entry
+    ..value = value
+    ..isChange = isChange;
   editorNow.session.mode = new ace.Mode.forFile(entry.name);
   editorNow.setValue(value);
   editorNow.focus();
@@ -70,7 +68,7 @@ bufferSetValueFromString(hetifile.HetiFile entry, String value,[isChange=false])
 }
 
 bufferSetValueFromEntry(hetifile.HetiFile entry) {
-  if(bufferDic.containsKey(entry.fullPath)) {
+  if (bufferDic.containsKey(entry.fullPath)) {
     print("####==> AAA 01");
     tab.selectTab("#m01_now");
     bufferSetValueFromString(entry, bufferDic[entry.fullPath].value, true);
@@ -97,10 +95,6 @@ bufferSetValueFromEntry(hetifile.HetiFile entry) {
   });
 }
 
-
-
-
-
 void main() {
 //  new Future.delayed(new Duration(seconds:5),(){
 //  te.HetiTextDecoder sjisEnc = new te.HetiTextDecoder("shift_jis");
@@ -117,7 +111,7 @@ void main() {
     ..session.mode = new ace.Mode.named(ace.Mode.DART)
     //..readOnly = true
     ..keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
-  
+
   editorNow.session.onChange.listen((ace.Delta d) {
     print("onchange ${d.action} ${d.text} ${d.range.start}");
     currentBuffer.isChange = true;
@@ -189,11 +183,11 @@ void main() {
   html.querySelectorAll('[name="mode"]').forEach((html.InputElement radioButton) {
     radioButton.onClick.listen((html.MouseEvent e) {
       print("select mode ${radioButton.value}");
-      if(radioButton.value == "emacs") {
+      if (radioButton.value == "emacs") {
         editorFile.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
         editorNow.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
-      } else if(radioButton.value == "vi"){
-        editorFile.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.VIM); 
+      } else if (radioButton.value == "vi") {
+        editorFile.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.VIM);
         editorNow.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.VIM);
       }
     });
@@ -203,7 +197,7 @@ void main() {
     print("#click remove");
     rmdialog.show();
   });
-  
+
   html.querySelector("#con-now-save-button").onClick.listen((html.MouseEvent e) {
     print("#click save");
     savedialog.show();
@@ -212,7 +206,7 @@ void main() {
     print("#click reset");
     bufferClear();
   });
-  
+
   //
   //
   getRoot();
@@ -269,17 +263,14 @@ List<hetifile.HetiEntry> selectFile(List<int> rowList) {
   List<hetifile.HetiEntry> ret = [];
 
   for (int row in rowList) {
-    int index = (row ~/ 3) -1;
-    if (index <= -1 || index >= (currentDir.lastGetList.length)) {
-      
-    } else if(index< currentDir.lastGetList.length) {
+    int index = (row ~/ 3) - 1;
+    if (index <= -1 || index >= (currentDir.lastGetList.length)) {} else if (index < currentDir.lastGetList.length) {
       hetifile.HetiEntry entry = currentDir.lastGetList[index];
       ret.add(entry);
     }
   }
   return ret;
 }
-
 
 select(int row, int col) {
   List<hetifile.HetiEntry> entryList = selectFile([row]);
@@ -292,13 +283,13 @@ select(int row, int col) {
     });
     return;
   } else {
-      hetifile.HetiEntry entry = entryList[0];
-      if (entry is hetifile.HetiDirectory) {
-        currentDir = entry;
-        updateList();
-      } else if (entry is hetifile.HetiFile) {
-        bufferSetValueFromEntry(entry);
-      }
+    hetifile.HetiEntry entry = entryList[0];
+    if (entry is hetifile.HetiDirectory) {
+      currentDir = entry;
+      updateList();
+    } else if (entry is hetifile.HetiFile) {
+      bufferSetValueFromEntry(entry);
+    }
   }
 }
 
@@ -349,8 +340,8 @@ class RemoveDialog {
 
   void show() {
     List<int> rowList = [];
-    List<ace.Annotation> a =  editorFile.session.getAnnotations();
-    for(ace.Annotation b in a) {
+    List<ace.Annotation> a = editorFile.session.getAnnotations();
+    for (ace.Annotation b in a) {
       rowList.add(b.row);
     }
     dialogOk.onClick.listen((html.MouseEvent e) {
@@ -358,7 +349,7 @@ class RemoveDialog {
     });
     List<hetifile.HetiEntry> fList = selectFile(rowList);
     StringBuffer buffer = new StringBuffer();
-    for(hetifile.HetiEntry f in fList) {
+    for (hetifile.HetiEntry f in fList) {
       buffer.write(f.name);
       buffer.write("\n");
     }
@@ -370,11 +361,11 @@ class RemoveDialog {
     dialog.style.zIndex = "50";
     dialogMessage.value = buffer.toString();
     dialogOk.onClick.listen((html.MouseEvent e) {
-      for(hetifile.HetiEntry f in fList) {
-        if(f is hetifile.HetiFile) {
+      for (hetifile.HetiEntry f in fList) {
+        if (f is hetifile.HetiFile) {
           f.remove();
-        } else if(f is hetifile.HetiDirectory) {
-          f.removeRecursively();          
+        } else if (f is hetifile.HetiDirectory) {
+          f.removeRecursively();
         }
       }
       dialog.style.display = "none";
@@ -392,6 +383,7 @@ class SaveDialog {
   html.ButtonElement dialogOk = html.querySelector('#dialog-save-file-ok');
   html.ButtonElement dialogBack = html.querySelector('#dialog-save-file-back');
   html.TextAreaElement dialogMessage = html.querySelector('#dialog-save-file-message');
+  html.TextAreaElement dialogFilename = html.querySelector('#dialog-save-file-name');
 
   SaveDialog() {
     init();
@@ -399,11 +391,18 @@ class SaveDialog {
 
   void init() {
     dialogOk.onClick.listen((html.MouseEvent e) {
-      if(currentBuffer != null) {
+      if (currentBuffer != null) {
         currentBuffer.isChange == false;
         String text = editorNow.value;
-        currentBuffer.file.getHetimaFile().then((hetima.HetimaFile f) {
-          f.write(conv.UTF8.encode(text), 0);
+        String name = dialogFilename.value;
+        currentBuffer.file.getParent().then((hetifile.HetiDirectory d) {
+          return d.createFile(name);
+        }).then((hetifile.HetiFile file) {
+          return file.getHetimaFile().then((hetima.HetimaFile f) {
+            return f.write(conv.UTF8.encode(text), 0);
+          }).then((hetima.WriteResult r) {
+            bufferSetValueFromEntry(file);
+          });
         });
       }
       dialog.style.display = "none";
@@ -421,13 +420,17 @@ class SaveDialog {
     dialog.style.width = "200px";
     dialog.style.zIndex = "50";
     dialogMessage.value = "support encoding is utf8 only";
+    dialogFilename.value = "";
+    if (currentBuffer != null) {
+      dialogFilename.value = currentBuffer.file.name;
+    }
   }
 }
 
 class Tab {
   Map<String, String> tabs = {
     "#m00_file": "#con-file", //"#editor-file",
-    "#m01_now": "#con-now",//"#editor-now",
+    "#m01_now": "#con-now", //"#editor-now",
     "#m00_clone": "#com-clone"
   };
 
