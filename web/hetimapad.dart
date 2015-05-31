@@ -12,7 +12,7 @@ import 'package:hetimacore/hetimacore_cl.dart' as hetima;
 import 'package:hetimafile/hetimafile.dart' as hetifile;
 import 'package:hetimafile/hetimafile_cl.dart' as hetifilecl;
 import 'utils.dart' as git;
-import 'dart:js' as js;
+//import 'dart:js' as js;
 import 'hetitextencoding.dart' as te;
 part 'src/autocomplete.dart';
 part 'src/documents.dart';
@@ -61,6 +61,7 @@ bufferSetValueFromString(hetifile.HetiFile entry, String value, [isChange = fals
     ..file = entry
     ..value = value
     ..isChange = isChange;
+  editorNow.readOnly = false;
   editorNow.session.mode = new ace.Mode.forFile(entry.name);
   editorNow.setValue(value);
   editorNow.focus();
@@ -96,6 +97,9 @@ bufferSetValueFromEntry(hetifile.HetiFile entry) {
 }
 
 void main() {
+  new Future.delayed(new Duration(microseconds:500),(){a();});
+}
+void a() {
 //  new Future.delayed(new Duration(seconds:5),(){
 //  te.HetiTextDecoder sjisEnc = new te.HetiTextDecoder("shift_jis");
 //  print("### => ${sjisEnc.decode([65, 66, 67, 68])} ${sjisEnc.decode([0x41, 0x42, 0x43, 0x84, 0x44]).length}");
@@ -109,7 +113,7 @@ void main() {
   editorNow
     ..theme = new ace.Theme.named(ace.Theme.CHROME)
     ..session.mode = new ace.Mode.named(ace.Mode.DART)
-    //..readOnly = true
+    ..readOnly = true
     ..keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
 
   editorNow.session.onChange.listen((ace.Delta d) {
@@ -154,7 +158,9 @@ void main() {
 
   html.querySelector('#editor-file').onKeyDown.listen((html.KeyboardEvent e) {
     print("#psuh key ${e.keyCode} ${editorFile.cursorPosition.row} ${editorFile.cursorPosition.column}");
-    select(editorFile.cursorPosition.row, editorFile.cursorPosition.column);
+    if(e.keyCode == 13) {
+      select(editorFile.cursorPosition.row, editorFile.cursorPosition.column);
+    }
   });
 
   //
@@ -207,9 +213,6 @@ void main() {
     bufferClear();
   });
 
-  //
-  //
-  getRoot();
 }
 
 void onClickClone() {
@@ -219,6 +222,8 @@ void onClickClone() {
 
   print("click clone button ${address.value}");
   git.GitLocation location = new git.GitLocation(outputdir.value);
+  html.querySelector("#loader").style.display = "block";
+  html.querySelector('#com-clone-btn').style.display = "none";
   location.init().then((_) {
     print("### ${location.entry}");
     git.ObjectStore store = new git.ObjectStore(location.entry);
@@ -226,9 +231,13 @@ void onClickClone() {
     clone.clone().then((_) {
       print("end clone");
       dialog.show("clone end");
+      html.querySelector("#loader").style.display = "none";
+      html.querySelector('#com-clone-btn').style.display = "block";
     }).catchError((e) {
       print("end clone error : ${e} ${e.toString()}");
       dialog.show("end clone error : ${e} ${e.toString()}");
+      html.querySelector("#loader").style.display = "none";
+      html.querySelector('#com-clone-btn').style.display = "block";
     });
   });
 }

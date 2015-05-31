@@ -20,11 +20,16 @@
      [Content1] clone
      -->
     <div id="com-clone" style="width:100%; height:calc(100% - 70px);">
+     <div id="com-clone" style="width:100%; height:32;">
+      <object type="image/svg+xml" data="loader_a.svg" width="32" height="32"></object>
+     </div>
+
     <p>github address<br>
       <textarea id="com-clone-address" placeholder="https://github.com/kyorohiro/dart_hetimaregex.git" style="width:100%;"></textarea>
       output dirname<br>
       <textarea id="com-clone-outputdir" placeholder="dart_hetimaregex" style="width:100%;"></textarea>
       <button id="com-clone-btn">Clone</button>
+      <object id="loader" type="image/svg+xml" data="loader_b.svg" width="32" height="32" style="display: none"></object>
     </p>
     <p>Character coding<br>
       <input type="radio" name="coding" value="UTF-8" checked>UTF-8<br>
@@ -46,7 +51,7 @@
     <!-- 
     [Content2] file
     -->
-    <div id="con-file" style="width:100%; height:calc(100% - 70px);">
+    <div id="con-file" style="width:100%; height:calc(100% - 70px); display:none;" >
     <div style="width:100%; height:35px;">
       <button id="con-file-remove-button" style="height:30px;background-color:#ffaaaa;">Remove</button>
     </div>
@@ -56,7 +61,7 @@
     <!--
      [Content3] now
      -->
-    <div id="con-now" style="width:100%; height:calc(100% - 70px);">
+    <div id="con-now" style="width:100%; height:calc(100% - 70px); display:none;">
         <div style="width:100%; height:35px;">
            <button id="con-now-save-button" style="height:30px;background-color:#ffaaaa;">Save</button>
            <button id="con-now-reset-button" style="height:30px;background-color:#ffaaaa;">Reset</button>
@@ -64,10 +69,11 @@
         <div id="editor-now" style="width:100%; height:calc(100% - 35px);"> Now</div> 
     </div> 
 
-    <script type="text/javascript" src="packages/ace_js/ace.js"></script> 
-    <script type="text/javascript" src="packages/ace_js/ext-language_tools.js"></script>
-    <script type="text/javascript" src="packages/textencoding_js/encoding-indexes.js"></script>
-    <script type="text/javascript" src="packages/textencoding_js/encoding.js"></script>
+    <script type="text/javascript" src="packages/ace_js/ace.js" defer></script> 
+    <script type="text/javascript" src="packages/ace_js/ext-language_tools.js" defer></script>
+    <script type="text/javascript" src="packages/textencoding_js/encoding-indexes.js" defer></script>
+    <script type="text/javascript" src="packages/textencoding_js/encoding.js" defer></script>
+    <script src="packages/chrome/bootstrap.js" defer></script>
 <!--script type="text/javascript">
     console.log("#########SADf");
     var bytes = [65,66,67,68,69];
