@@ -27,6 +27,7 @@ ace.Editor editorNow = ace.edit(html.querySelector('#editor-now'));
 Tab tab = new Tab();
 Dialog dialog = new Dialog();
 RemoveDialog rmdialog = new RemoveDialog();
+SaveDialog savedialog = new SaveDialog();
 hetifile.HetiDirectory currentDir = null;
 String coding = "UTF-8";
 
@@ -126,6 +127,7 @@ void main() {
   tab.init();
   dialog.init();
   rmdialog.init();
+  savedialog.init();
   //
   // clone
   html.querySelector('#com-clone-btn').onClick.listen((html.MouseEvent e) {
@@ -204,12 +206,11 @@ void main() {
   
   html.querySelector("#con-now-save-button").onClick.listen((html.MouseEvent e) {
     print("#click save");
-  // savedialog.show;
+    savedialog.show();
   });
   html.querySelector("#con-now-reset-button").onClick.listen((html.MouseEvent e) {
     print("#click reset");
     bufferClear();
-  // savedialog.show;
   });
   
   //
@@ -398,6 +399,13 @@ class SaveDialog {
 
   void init() {
     dialogOk.onClick.listen((html.MouseEvent e) {
+      if(currentBuffer != null) {
+        currentBuffer.isChange == false;
+        String text = editorNow.value;
+        currentBuffer.file.getHetimaFile().then((hetima.HetimaFile f) {
+          f.write(conv.UTF8.encode(text), 0);
+        });
+      }
       dialog.style.display = "none";
     });
     dialogBack.onClick.listen((html.MouseEvent e) {
