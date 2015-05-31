@@ -46,7 +46,7 @@ packages:
   hetimacore:
     description:
       ref: null
-      resolved-ref: "19cdf7af53960387cda960f07fcd90e72e1b182c"
+      resolved-ref: fedb117729442cbb4de822b66d4b7d2a7b307ad5
       url: "https://github.com/kyorohiro/dart_hetimacore"
     source: git
     version: "0.0.2"

@@ -30,6 +30,76 @@ RemoveDialog rmdialog = new RemoveDialog();
 hetifile.HetiDirectory currentDir = null;
 String coding = "UTF-8";
 
+
+
+Map<String,Buffer> bufferDic = {};
+class Buffer {
+  hetifile.HetiFile file;
+  String value = "";
+  bool isChange = false;
+}
+Buffer currentBuffer = null;
+void bufferSave(String key, Buffer value) {
+  bufferDic[key] = value;
+}
+
+void bufferClear() {
+  if(currentBuffer != null) {
+    bufferDic.remove(currentBuffer.file.fullPath);
+    currentBuffer.isChange = false;
+    bufferSetValueFromEntry(currentBuffer.file);
+  }
+}
+
+bufferSetValueFromString(hetifile.HetiFile entry, String value,[isChange=false]) {
+  if(currentBuffer != null && currentBuffer.isChange == true) {
+    print("####==> AAA 02");
+    bufferDic[currentBuffer.file.fullPath] = currentBuffer;
+    currentBuffer.value = editorNow.value;
+  }
+  print("####==> AAA 03");
+  currentBuffer = new Buffer()
+  ..file=entry
+  ..value=value
+  ..isChange=isChange;
+  editorNow.session.mode = new ace.Mode.forFile(entry.name);
+  editorNow.setValue(value);
+  editorNow.focus();
+  editorNow.clearSelection();
+}
+
+bufferSetValueFromEntry(hetifile.HetiFile entry) {
+  if(bufferDic.containsKey(entry.fullPath)) {
+    print("####==> AAA 01");
+    tab.selectTab("#m01_now");
+    bufferSetValueFromString(entry, bufferDic[entry.fullPath].value, true);
+    return;
+  }
+  entry.getHetimaFile().then((hetima.HetimaFile ff) {
+    hetima.HetimaBuilder b = new hetima.HetimaFileToBuilder(ff);
+    return b.getLength().then((int length) {
+      return b.getByteFuture(0, length);
+    }).then((List<int> l) {
+      tab.selectTab("#m01_now");
+      try {
+        print("### ${entry.name}");
+        te.HetiTextDecoder enc = new te.HetiTextDecoder(coding);
+        if (coding == "UTF-8") {
+          bufferSetValueFromString(entry, conv.UTF8.decode(l, allowMalformed: true));
+        } else {
+          bufferSetValueFromString(entry, enc.decode(l));
+        }
+      } catch (e) {
+        print("### ERROR 001 ${e}");
+      }
+    }).catchError((e) {});
+  });
+}
+
+
+
+
+
 void main() {
 //  new Future.delayed(new Duration(seconds:5),(){
 //  te.HetiTextDecoder sjisEnc = new te.HetiTextDecoder("shift_jis");
@@ -39,13 +109,18 @@ void main() {
   editorFile
     ..theme = new ace.Theme.named(ace.Theme.CHROME)
     ..session.mode = new ace.Mode.named(ace.Mode.DART)
-    ..readOnly = true;
-
+    ..readOnly = true
+    ..keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
   editorNow
     ..theme = new ace.Theme.named(ace.Theme.CHROME)
     ..session.mode = new ace.Mode.named(ace.Mode.DART)
-    ..readOnly = true;
-
+    //..readOnly = true
+    ..keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
+  
+  editorNow.session.onChange.listen((ace.Delta d) {
+    print("onchange ${d.action} ${d.text} ${d.range.start}");
+    currentBuffer.isChange = true;
+  });
   enableAutocomplete(editorNow);
 
   tab.init();
@@ -109,10 +184,37 @@ void main() {
     });
   });
 
+  html.querySelectorAll('[name="mode"]').forEach((html.InputElement radioButton) {
+    radioButton.onClick.listen((html.MouseEvent e) {
+      print("select mode ${radioButton.value}");
+      if(radioButton.value == "emacs") {
+        editorFile.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
+        editorNow.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.EMACS);
+      } else if(radioButton.value == "vi"){
+        editorFile.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.VIM); 
+        editorNow.keyboardHandler = new ace.KeyboardHandler.named(ace.KeyboardHandler.VIM);
+      }
+    });
+  });
+
   html.querySelector("#con-file-remove-button").onClick.listen((html.MouseEvent e) {
-    print("#psuh key ${editorFile.cursorPosition.row} ${editorFile.cursorPosition.column}");
+    print("#click remove");
     rmdialog.show();
   });
+  
+  html.querySelector("#con-now-save-button").onClick.listen((html.MouseEvent e) {
+    print("#click save");
+  // savedialog.show;
+  });
+  html.querySelector("#con-now-reset-button").onClick.listen((html.MouseEvent e) {
+    print("#click reset");
+    bufferClear();
+  // savedialog.show;
+  });
+  
+  //
+  //
+  getRoot();
 }
 
 void onClickClone() {
@@ -177,6 +279,7 @@ List<hetifile.HetiEntry> selectFile(List<int> rowList) {
   return ret;
 }
 
+
 select(int row, int col) {
   List<hetifile.HetiEntry> entryList = selectFile([row]);
   if (entryList.length == 0) {
@@ -193,29 +296,7 @@ select(int row, int col) {
         currentDir = entry;
         updateList();
       } else if (entry is hetifile.HetiFile) {
-        //(entry as hetifile.HetiFile)
-        entry.getHetimaBuilder().then((hetima.HetimaBuilder b) {
-          return b.getLength().then((int length) {
-            return b.getByteFuture(0, length);
-          }).then((List<int> l) {
-            tab.selectTab("#m01_now");
-            try {
-              print("### ${entry.name}");
-              te.HetiTextDecoder enc = new te.HetiTextDecoder(coding);
-              ;
-              editorNow.session.mode = new ace.Mode.forFile(entry.name);
-              if (coding == "UTF-8") {
-                editorNow.setValue(conv.UTF8.decode(l, allowMalformed: true));
-              } else {
-                editorNow.setValue(enc.decode(l));
-              }
-              editorNow.focus();
-              editorNow.clearSelection();
-            } catch (e) {
-              print("### ERROR 001 ${e}");
-            }
-          }).catchError((e) {});
-        });
+        bufferSetValueFromEntry(entry);
       }
   }
 }
@@ -299,11 +380,46 @@ class RemoveDialog {
     });
   }
 }
+//
+//<div id="dialog-save-file" style="width:20%; height:20%; background-color: #ccccff; display:none;">
+//<textarea id="dialog-save-file-message" value="none" style="width:100%;"></textarea>
+//<button id="dialog-save-file-ok">OK REMOVE</button>
+//<button id="dialog-save-file-back">BACK</button>
+//</div>
+class SaveDialog {
+  html.Element dialog = html.querySelector('#dialog-save-file');
+  html.ButtonElement dialogOk = html.querySelector('#dialog-save-file-ok');
+  html.ButtonElement dialogBack = html.querySelector('#dialog-save-file-back');
+  html.TextAreaElement dialogMessage = html.querySelector('#dialog-save-file-message');
+
+  SaveDialog() {
+    init();
+  }
+
+  void init() {
+    dialogOk.onClick.listen((html.MouseEvent e) {
+      dialog.style.display = "none";
+    });
+    dialogBack.onClick.listen((html.MouseEvent e) {
+      dialog.style.display = "none";
+    });
+  }
+
+  void show() {
+    dialog.style.left = "${html.window.innerWidth/2-100}px";
+    dialog.style.top = "${html.window.innerHeight/2-100}px";
+    dialog.style.position = "absolute";
+    dialog.style.display = "block";
+    dialog.style.width = "200px";
+    dialog.style.zIndex = "50";
+    dialogMessage.value = "support encoding is utf8 only";
+  }
+}
 
 class Tab {
   Map<String, String> tabs = {
     "#m00_file": "#con-file", //"#editor-file",
-    "#m01_now": "#editor-now",
+    "#m01_now": "#con-now",//"#editor-now",
     "#m00_clone": "#com-clone"
   };
 

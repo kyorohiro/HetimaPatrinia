@@ -78,13 +78,36 @@ nav > ul > li {
     cursor: pointer;
 }
 
-/* 最後の要素以外にマージンを適用 */
 nav > ul > li:not(:last-child) {
     margin-right: 10px;
 }
 
-/* 選択中のタブを表現する際のクラス */
 nav > ul > li.selected {
     background: #fff;
     border-bottom: 1px solid #fff;
+}
+
+
+// スクロールバー全体
+.scrollbox::-webkit-scrollbar {
+  width:10px;
+  background:#ffeeee;
+}
+// 横スクロールバー全体
+.scrollbox::-webkit-scrollbar:horizontal {
+  height:10px;
+}
+// スクロールバー上下左右末端のボタン
+.scrollbox::-webkit-scrollbar-button {
+  width:10px;
+  height:10px;
+  background:#666;
+}
+// ドラッグするツマミ部分
+.scrollbox::-webkit-scrollbar-thumb {
+  background:#999;
+}
+// 右下角部分
+.scrollbox::-webkit-scrollbar-corner {
+  background:#ddd;
 }
