@@ -6,11 +6,11 @@ dependencies:
   ace: any
   chrome: any
   hetimacore:
-    git: https://github.com/kyorohiro/dart_hetimacore
+    git: https://github.com/kyorohiro/dart_hetimacore.git
   hetimafile:
-    path: /Users/kiyohiro/dart/git/dart_hetimafile
+    git: https://github.com/kyorohiro/dart_hetimafile.git
   hetimagit:
-    path: /Users/kiyohiro/dart/git/dart_hetimagit
+    git: https://github.com/kyorohiro/dart_hetimagit.git
   textencoding_js:
     path: jstextencoding
 dev_dependencies:

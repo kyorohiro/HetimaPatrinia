@@ -46,21 +46,23 @@ packages:
   hetimacore:
     description:
       ref: null
-      resolved-ref: fedb117729442cbb4de822b66d4b7d2a7b307ad5
-      url: "https://github.com/kyorohiro/dart_hetimacore"
+      resolved-ref: "4f493da5a8e5d26f36f590d81b83aac53fb3794e"
+      url: "https://github.com/kyorohiro/dart_hetimacore.git"
     source: git
-    version: "0.0.2"
+    version: "0.1.0"
   hetimafile:
     description:
-      path: "/Users/kiyohiro/dart/git/dart_hetimafile"
-      relative: false
-    source: path
+      ref: null
+      resolved-ref: f26f528b798306bc1b343dab87bbdba3cb345426
+      url: "https://github.com/kyorohiro/dart_hetimafile.git"
+    source: git
     version: "0.0.1"
   hetimagit:
     description:
-      path: "/Users/kiyohiro/dart/git/dart_hetimagit"
-      relative: false
-    source: path
+      ref: null
+      resolved-ref: "4a11e5ac16dbbe062f03597edcb897b161dc7d8e"
+      url: "https://github.com/kyorohiro/dart_hetimagit.git"
+    source: git
     version: "0.0.1"
   http_parser:
     description: http_parser
