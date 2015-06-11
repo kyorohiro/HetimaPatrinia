@@ -75,8 +75,8 @@ bufferSetValueFromEntry(hetifile.HetiFile entry) {
     bufferSetValueFromString(entry, bufferDic[entry.fullPath].value, true);
     return;
   }
-  entry.getHetimaFile().then((hetima.HetimaFile ff) {
-    hetima.HetimaBuilder b = new hetima.HetimaFileToBuilder(ff);
+  entry.getHetimaFile().then((hetima.HetimaData ff) {
+    hetima.HetimaReader b = new hetima.HetimaFileToBuilder(ff);
     return b.getLength().then((int length) {
       return b.getByteFuture(0, length);
     }).then((List<int> l) {
@@ -407,7 +407,7 @@ class SaveDialog {
         currentBuffer.file.getParent().then((hetifile.HetiDirectory d) {
           return d.createFile(name);
         }).then((hetifile.HetiFile file) {
-          return file.getHetimaFile().then((hetima.HetimaFile f) {
+          return file.getHetimaFile().then((hetima.HetimaData f) {
             return f.write(conv.UTF8.encode(text), 0);
           }).then((hetima.WriteResult r) {
             bufferSetValueFromEntry(file);
